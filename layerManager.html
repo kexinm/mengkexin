@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<meta charset="utf-8" />
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<title>202031108010006Map</title>
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
+		<link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+		<script src="https://js.arcgis.com/4.23/"></script>
+
+		<style>
+			html,
+			body {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				font-weight: bolder;
+				border: 10px;
+				border-radius: 10%;
+				/* 添加圆角边框 */
+				border-color: black;
+			}
+
+			#viewDiv1 {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+
+			#ChangeDiv {
+				position: absolute;
+				top: 2%;
+				right: 1%;
+				width: 110px;
+				padding: 8px 4px;
+				background-size: 100%;
+				background-color: #d8d4d4eb;
+				opacity: 0.8;
+				z-index: 1;
+				border: 2px dotted #000000;
+				border-radius: 12px;
+			}
+
+			#ShowInfo {
+				float: left;
+				position: absolute;
+				bottom: 2%;
+				left: 1%;
+				padding: 10px 20px;
+				border-style: dotted;
+				border-radius: 22%;
+				background-color: #d8d4d4eb;
+				opacity: 0.8;
+				font-family: "Comic Sans MS";
+				font-size: 14px;
+			}
+		</style>
+
+		<script>
+			require(["esri/config",
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/layers/FeatureLayer",
+				"esri/widgets/Legend",
+				"esri/Graphic",
+				"esri/widgets/LayerList",
+				"esri/core/reactiveUtils"
+			], function(esriConfig, Map, MapView, FLayer, Legend, Graphic, LayerList, reactiveUtils) {
+
+				esriConfig.apiKey =
+					"AAPK424de85d28c844e4b1ee55c39e7cebc9x1v2-aG5JY-DK1o4R1Yin9PN5bSqv292_i3klsReMajPhWHru2FP5SzvCuD1yJS3";
+
+				// 左侧底图
+				const map1 = new Map({
+					basemap: "arcgis-community" // Basemap layer service
+				});
+
+				// 左侧视图
+				const view1 = new MapView({
+					container: "viewDiv1", // Div element
+					map: map1,
+					center: [105.767614, 35.64586], // Longitude, latitude
+					zoom: 3, // Zoom level 							
+				});
+
+				
+				const fealayer = new FLayer({
+					portalItem: {  // autocasts as new PortalItem()
+					  id: "5a034d4350994a93ac50aee4024c0e77",
+					}  ,// the first layer in the service is returned
+					title: "革命根据地"
+				});
+				map1.add(fealayer);
+				
+				const featurelayer = new FLayer({
+					portalItem: {  // autocasts as new PortalItem()
+					  id: "6e826a01eac24f50a710d260c26f9d5d",
+					},  // the first layer in the service is returned
+					title: "长征路线图"
+				});
+				map1.add(featurelayer);
+				
+				
+				
+				
+
+				// 左侧待换底图
+				document.getElementById("arcgis-dark-gray").addEventListener("click", function() {
+					map1.basemap = "arcgis-dark-gray";
+				});
+
+				document.getElementById("arcgis-nova").addEventListener("click", function() {
+					map1.basemap = "arcgis-nova";
+				});
+
+				document.getElementById("arcgis-imagery").addEventListener("click", function() {
+					map1.basemap = "arcgis-imagery";
+				});
+
+				document.getElementById("osm-standard").addEventListener("click", function() {
+					map1.basemap = "osm-standard";
+				});
+
+				document.getElementById("arcgis-streets-night").addEventListener("click", function() {
+					map1.basemap = "arcgis-streets-night";
+				});
+
+				document.getElementById("arcgis-oceans").addEventListener("click", function() {
+					map1.basemap = "arcgis-oceans";
+				});
+
+
+				// 显示经纬度坐标、比例尺大小和缩放级别
+				function showInformation(pt) {
+					document.getElementById("coordinateDisplay").textContent = "Lat/Lon  " + pt.latitude.toFixed(3) +
+						", " +
+						pt.longitude.toFixed(3);
+					document.getElementById("scaleDisplay").textContent = "  | Scale  1:" + Math.round(view1.scale * 1) /
+						1;
+				}
+
+				// 视图静止时，事件显示中心的位置坐标
+				view1.watch(["stationary"], function() {
+					showInformation(view1.center);
+				});
+
+				// 显示鼠标移动时的位置坐标
+				view1.on(["pointer-down", "pointer-move"], function(event) {
+					showInformation(view1.toMap({
+						x: event.x,
+						y: event.y
+					}));
+				});
+				
+				let layerList = new LayerList({
+				view: view1
+				});
+				// Adds widget below other elements in the top left corner of the view
+				view1.ui.add(layerList, {
+				position: "top-left"
+				});
+				
+				
+
+
+			});
+		</script>
+
+	</head>
+
+
+	<body>
+
+		<nav class="navbar navbar-expand-sm bg-light navbar-light" style="background-image: url(https://kexinm.github.io/mengkexin/background.jpg); font-style: italic;">
+			<a class="navbar-brand" style="font-size: 36pt;">GIS🌏</a> 
+			<ul class="navbar-nav">
+				<li class="nav-item active">
+					<a class="nav-link" href="https://kexinm.github.io/mengkexin/yida_popu.html" style="color: darkblue;font-size: 16pt;">一大时期党员数量</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://kexinm.github.io/mengkexin/genjvdi.html" style="color: darkblue;font-size: 16pt;">革命根据地详情图</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://kexinm.github.io/mengkexin/luxian.html" style="color: darkblue;font-size: 16pt;">红军长征路线详情图</a>
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="https://kexinm.github.io/mengkexin/ershida.html" style="color: darkblue;font-size: 16pt;">二十大时期党员数量</a>
+				</li>
+				<li class="nav-item dropdown">
+				  <a class="nav-link dropdown-toggle" id="navbardrop" data-bs-toggle="dropdown" style="color: #666666;font-size: 16pt;">
+					其他
+				  </a>
+				  <div class="dropdown-menu">
+					<a class="dropdown-item" href="https://kexinm.github.io/mengkexin/layerManager.html">图层管理</a>
+					<a class="dropdown-item" href="https://kexinm.github.io/mengkexin/Compared.html">党员人数对比</a>
+				  </div>
+				</li>	
+			</ul>
+		</nav>
+
+		<div id="viewDiv1"></div>
+
+		<div id="ChangeDiv">
+			<!-- type属性的radio: 返回单选按钮的表单元素类型 
+			允许在多个拥有相同 name 值的选项中选中其中一个 -->
+			<input type="radio" id="arcgis-dark-gray" name="basemap"><img src="https://kexinm.github.io/mengkexin/arcgis-dark-gray.png" height="80px"
+				width="80px" alt="arcgis-dark-gray" title="arcgis-dark-gray">
+			<br />
+			<input type="radio" id="arcgis-nova" name="basemap"><img src="https://kexinm.github.io/mengkexin/arcgis-nova.png" height="80px"
+				width="80px" alt="arcgis-nova" title="arcgis-nova">
+			<br />
+			<input type="radio" id="arcgis-imagery" name="basemap"><img src="https://kexinm.github.io/mengkexin/arcgis-imagery.png"
+				height="80px" width="80px" alt="arcgis-imagery" title="arcgis-imagery">
+			<br />
+			<input type="radio" id="osm-standard" name="basemap"><img src="https://kexinm.github.io/mengkexin/osm-standard.png" height="80px"
+				width="80px" alt="osm-standard" title="osm-standard">
+			<br />
+			<input type="radio" id="arcgis-streets-night" name="basemap"><img src="https://kexinm.github.io/mengkexin/arcgis-streets-night.png" height="80px"
+				width="80px" alt="arcgis-streets-night" title="arcgis-streets-night">
+			<br />
+			<input type="radio" id="arcgis-oceans" name="basemap"><img src="https://kexinm.github.io/mengkexin/arcgis-oceans.png" height="80px"
+				width="80px" alt="arcgis-oceans" title="arcgis-oceans">
+			<br />
+		</div>
+
+		<div id="ShowInfo">
+			<div id="coordinateDisplay" style="display:inline"></div>
+			<div id="scaleDisplay" style="display:inline"></div>
+		</div>
+
+	</body>
+
+</html>
